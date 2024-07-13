@@ -26,7 +26,7 @@ from hf_config import get_config
 from hf_model import get_hf_models
 
 from callbacks import ComputeThroughputCallback, TokenCountCallback
-from datasets import prepare_dataset
+from prepare_dataset import prepare_dataset
 from hinshi_encoder import build_hinshi_tokenize
 
 MAX_TOKENS = 8 * 1000 * 1000 * 1000
