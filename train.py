@@ -57,7 +57,7 @@ def parse_arguments():
     parser.add_argument("--output_dir", type=str, required=True)
     parser.add_argument("--model_name", type=str, required=True)
     parser.add_argument("--wandb_project", type=str, required=True)
-    parser.add_argument("--wandb_entity", type=str, required=True)
+    # parser.add_argument("--wandb_entity", type=str, required=True)
     parser.add_argument("--upload_repo_id", type=str)
     parser.add_argument("--tokenizer", type=str, default="NovelAI/nerdstash-tokenizer-v2")
     parser.add_argument("--resume", action='store_true')
@@ -150,8 +150,8 @@ def main():
         remove_unused_columns=False,
         max_steps=args.max_steps
     )
-    rank_0_print("parallel_mode: ", training_args.parallel_mode)
-    rank_0_print("world_size", training_args.world_size)
+    print("parallel_mode: ", training_args.parallel_mode)
+    print("world_size", training_args.world_size)
 
     computeThroughput = ComputeThroughputCallback(
         vocab_size=model.config.vocab_size,
