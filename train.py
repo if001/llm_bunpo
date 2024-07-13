@@ -37,17 +37,11 @@ GC_STEPS=1
 
 LOGGING_STEPS=2
 SAVE_STEPS=100
-NUM_GPUS=int(os.environ['WORLD_SIZE'])
-LOCAL_RANK = int(os.environ['LOCAL_RANK'])
+# NUM_GPUS=int(os.environ['WORLD_SIZE'])
+# LOCAL_RANK = int(os.environ['LOCAL_RANK'])
 
-if LOCAL_RANK == 0:
-    import transformers
-    transformers.logging.set_verbosity_info()
-
-
-def rank_0_print(*args, **kwargs):
-    if LOCAL_RANK == 0:
-        print(*args, **kwargs)
+import transformers
+transformers.logging.set_verbosity_info()
 
 def set_seed(seed=42):
     torch.manual_seed(seed)
@@ -89,7 +83,7 @@ def make_dataset(dataset_ids):
         ds_part = ds_part.remove_columns(filtered_list)
         ds.append(ds_part)
     combined_dataset = concatenate_datasets(ds)
-    rank_0_print("dataset", combined_dataset)
+    print("dataset", combined_dataset)
     return combined_dataset.shuffle(seed=42).train_test_split(test_size=0.1)
 
 def main():
@@ -108,17 +102,17 @@ def main():
     #         args.repo_id,
     #         # torch_dtype=torch.float16
     #         )
-    rank_0_print("--- model config ... ---")
-    rank_0_print(model.config)    
+    print("--- model config ... ---")
+    print(model.config)    
     
     data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
 
-    rank_0_print("--- making dataset ... ---")
+    print("--- making dataset ... ---")
     dataset = make_dataset(tokenizer)
     train_dataset = prepare_dataset(dataset["train"], tokenizer, encoder=encoder, add_special_tokens=False, append_concat_token=True)
     test_dataset = prepare_dataset(dataset["test"], tokenizer, encoder=encoder, add_special_tokens=False, append_concat_token=True)
 
-    rank_0_print("--- training start ... ---")
+    print("--- training start ... ---")
     training_args = TrainingArguments(
         output_dir=args.output_dir,
         num_train_epochs=2,
@@ -165,7 +159,7 @@ def main():
         seq_length=model.config.max_position_embeddings,
         num_layers=model.config.num_hidden_layers,
         hidden_size=model.config.hidden_size,
-        world_size=NUM_GPUS,
+        world_size=1,
         log_steps=LOGGING_STEPS,
     )
     tokenCounter = TokenCountCallback(max_token_count=MAX_TOKENS)
@@ -179,23 +173,20 @@ def main():
     )
 
     trainer.train(resume_from_checkpoint=args.resume)
-    rank_0_print("train done..")
+    print("train done..")
 
-    model.save_pretrained(args.output_dir,
-            # save_embedding_layers=args.include_lm_head,
-            is_main_process=LOCAL_RANK==0)
-    rank_0_print("save...") 
+    model.save_pretrained(args.output_dir)
+    print("save...") 
     
     for v in model.state_dict():
-        rank_0_print(v, model.state_dict()[v].shape)
-    rank_0_print("="*100)
+        print(v, model.state_dict()[v].shape)
+    print("="*100)
 
-    if LOCAL_RANK == 0 and args.upload_repo_id:
+    if args.upload_repo_id:
         print("--- push to hf ---")
         model.push_to_hub(args.upload_repo_id)
         print("upload done...") 
-    if LOCAL_RANK == 0:
-        wandb.finish()
+    wandb.finish()
 
 if __name__ == "__main__":
     main()
