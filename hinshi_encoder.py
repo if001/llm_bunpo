@@ -1,9 +1,10 @@
-import MeCab
 from transformers import AutoTokenizer, LlamaTokenizer
-import random
-
+# from polyglot.detect import Detector
 
 def build_hinshi_tokenize(tokenizer, rate=0.5, add_special_tokens=True):
+    import MeCab
+    import random
+
     HINSHI = [
         "感動詞",
         "記号",
@@ -47,6 +48,12 @@ def build_hinshi_tokenize(tokenizer, rate=0.5, add_special_tokens=True):
 
 def main():
     text='形態素解析したい文章を入力します'
+    text='this is a pen.'
+    
+    # detector = Detector(text)
+    # print(detector)
+    # exit(0)
+
     # tokenizer = LlamaTokenizer.from_pretrained("NovelAI/nerdstash-tokenizer-v2")
     tokenizer = AutoTokenizer.from_pretrained("llm-jp/llm-jp-13b-v2.0")
     
@@ -62,7 +69,7 @@ def main():
 
     # text_tokenized = tokenizer.tokenize(text)
     # print(text_tokenized)
-    encode = build_hinshi_tokenize(tokenizer, rate=0.2)
+    encode = build_hinshi_tokenize(tokenizer, rate=0.5)
     r = encode(text)
     print(r)
     print(tokenizer.decode(r))
