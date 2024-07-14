@@ -94,7 +94,7 @@ phi3 = [
     ),
     dict(
         name='phi3-small',
-        vocab_size=50257,
+        vocab_size=50257, ## llm-jp
         hidden_size=896,
         intermediate_size=2048,
         num_hidden_layers=12,
@@ -119,7 +119,7 @@ phi3 = [
     ),
     dict(
         name='phi3-tiny',
-        vocab_size=50257,
+        vocab_size=65535, ## NovelAI/nerdstash-tokenizer-v2
         hidden_size=512,
         intermediate_size=512,
         num_hidden_layers=4,
