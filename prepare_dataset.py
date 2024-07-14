@@ -91,8 +91,8 @@ def _prepare_packed_dataloader(
         if dataset_text_field is not None or formatting_func is not None:
             if tokenizer is None:
                 raise ValueError("You need to pass a tokenizer when using `dataset_text_field` with `SFTTrainer`.")
-            # ConstantLengthDatasetHinshi
-            constant_length_iterator = ConstantLengthDataset(
+
+            constant_length_iterator = ConstantLengthDatasetHinshi(
                 tokenizer,
                 dataset,
                 dataset_text_field=dataset_text_field,
@@ -104,7 +104,7 @@ def _prepare_packed_dataloader(
                 eos_token_id=tokenizer.eos_token_id,
                 append_concat_token=append_concat_token,
                 add_special_tokens=add_special_tokens,
-                # encoder=encoder
+                encoder=encoder
             )
 
             if isinstance(dataset, datasets.IterableDataset):
