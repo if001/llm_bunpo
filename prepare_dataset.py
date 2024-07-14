@@ -104,7 +104,7 @@ def _prepare_packed_dataloader(
                 eos_token_id=tokenizer.eos_token_id,
                 append_concat_token=append_concat_token,
                 add_special_tokens=add_special_tokens,
-                encoder=encoder
+                # encoder=encoder
             )
 
             if isinstance(dataset, datasets.IterableDataset):
