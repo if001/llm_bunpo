@@ -108,7 +108,7 @@ def main():
     data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
 
     print("--- making dataset ... ---")
-    dataset = make_dataset(tokenizer)
+    dataset = make_dataset(args.dataset_ids)
     train_dataset = prepare_dataset(dataset["train"], tokenizer, encoder=encoder, add_special_tokens=False, append_concat_token=True)
     test_dataset = prepare_dataset(dataset["test"], tokenizer, encoder=encoder, add_special_tokens=False, append_concat_token=True)
 
