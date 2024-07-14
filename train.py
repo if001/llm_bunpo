@@ -72,7 +72,8 @@ def parse_arguments():
 def make_dataset(dataset_ids):
     ds = []
     # print(datasets)
-    for dataset in dataset_ids:
+    for dataset_id in dataset_ids:
+        dataset = load_dataset(dataset_id, split="train", num_proc=8)
         # ds_part = dataset.shuffle(seed=42).select(range(100))
         # ds_part = dataset.shuffle(seed=42)
         ds_part = dataset
