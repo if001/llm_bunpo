@@ -17,9 +17,9 @@ def get_hf_models(config):
     if 'name' not in config:
         raise ValueError('config must have name field')
     model_name = config['name']
-    if model_name == 'phi-3':
+    if 'phi3' in model_name:
         return Phi3(config)
-    elif model_name == 'qwen2':
+    elif 'qwen2' in model_name:
         return Qwen2(config)
     else:
         raise ValueError('not impl hf models: ', model_name)
