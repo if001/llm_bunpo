@@ -1,9 +1,42 @@
 from transformers import AutoTokenizer, LlamaTokenizer
 # from polyglot.detect import Detector
+import MeCab
+import random
+
+
+class TaggerP:
+    def __init__(self, option=''):
+        self.option = option
+        self.tagger = MeCab.Tagger(option)
+
+    def __getstate__(self):
+        return {'option': self.option}
+
+    def __setstate__(self, state):
+        for k, v in state.items():
+            setattr(self, k, v)
+
+    def __getnewargs__(self):
+        return self.option,
+
+    def __reduce_ex__(self, proto):
+        func = TaggerP
+        args = self.__getnewargs__()
+        state = self.__getstate__()
+        listitems = None
+        dictitems = None
+        rv = (func, args, state, listitems, dictitems)
+        return rv
+
+    def __call__(self, text):
+        ret = self.tagger.parse(text).rstrip()
+        return ret
+
+    def parseToNode(self, text):
+        node = self.tagger.parseToNode(text)
+        return node
 
 def build_hinshi_tokenize(tokenizer, rate=0.5, add_special_tokens=True):
-    import MeCab
-    import random
 
     HINSHI = [
         "感動詞",
@@ -18,7 +51,7 @@ def build_hinshi_tokenize(tokenizer, rate=0.5, add_special_tokens=True):
         "連体詞"
     ]
     tokenizer.add_special_tokens({'additional_special_tokens': [f"<{h}>" for h in HINSHI]})
-    mecabTagger = MeCab.Tagger("-Ochasen")
+    mecabTagger = TaggerP("-Ochasen")
 
     def get_hinshi(char):
         node = mecabTagger.parseToNode(char)
@@ -49,7 +82,10 @@ def build_hinshi_tokenize(tokenizer, rate=0.5, add_special_tokens=True):
 def main():
     text='形態素解析したい文章を入力します'
     text='this is a pen.'
-    
+    mecabTagger = TaggerP("-Ochasen")
+    node = mecabTagger.parseToNode(text)
+    print(node)
+    exit(0)
     # detector = Detector(text)
     # print(detector)
     # exit(0)
