@@ -63,7 +63,6 @@ def build_hinshi_tokenize(tokenizer, rate=0.5):
     def encode(text, add_special_tokens=True):
         tokenized = tokenizer.tokenize(text)
         encoded = tokenizer.encode(text, add_special_tokens=False)
-        print('tokenized', tokenized)
         ids = []
         for char,id in zip(tokenized, encoded):
             rand = random.randint(0, 100)
