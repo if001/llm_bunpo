@@ -80,11 +80,11 @@ def build_hinshi_tokenize(tokenizer, rate=0.5):
 
 def main():
     text='形態素解析したい文章を入力します'
-    text='this is a pen.'
-    mecabTagger = TaggerP("-Ochasen")
-    node = mecabTagger.parseToNode(text)
-    print(node)
-    exit(0)
+    # text='this is a pen.'
+    # mecabTagger = TaggerP("-Ochasen")
+    # node = mecabTagger.parseToNode(text)
+    # print(node)
+    # exit(0)
     # detector = Detector(text)
     # print(detector)
     # exit(0)
