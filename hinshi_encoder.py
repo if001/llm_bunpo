@@ -36,7 +36,7 @@ class TaggerP:
         node = self.tagger.parseToNode(text)
         return node
 
-def build_hinshi_tokenize(tokenizer, rate=0.5, add_special_tokens=True):
+def build_hinshi_tokenize(tokenizer, rate=0.5)
 
     HINSHI = [
         "感動詞",
@@ -61,7 +61,7 @@ def build_hinshi_tokenize(tokenizer, rate=0.5, add_special_tokens=True):
                 return hinshi
             node = node.next
     
-    def encode(text):
+    def encode(text, add_special_tokens=True):
         tokenized = tokenizer.tokenize(text)
         encoded = tokenizer.encode(text)
         ids = []
