@@ -174,6 +174,7 @@ class ConstantLengthDatasetHinshi(ConstantLengthDataset):
                     print('b:', b)
                     print('id:', id)
                     print('d:', self.tokenizer.decode(id))
+                    print('-'*100)
 
             #tokenized_inputs = self.tokenizer(buffer, add_special_tokens=self.add_special_tokens, truncation=False)[
             #    "input_ids"
