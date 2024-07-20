@@ -67,7 +67,6 @@ def build_hinshi_tokenize(tokenizer, rate=0.5):
         for char,id in zip(tokenized, encoded):
             rand = random.randint(0, 100)
             if rate*100 > rand:
-                print(char)
                 h = get_hinshi(char)
                 h_id = tokenizer.encode(f'<{h}>', add_special_tokens=False)[0]
                 ids.append(h_id)
