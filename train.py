@@ -116,7 +116,7 @@ def main():
     print("--- training start ... ---")
     training_args = TrainingArguments(
         output_dir=args.output_dir,
-        num_train_epochs=2,
+        num_train_epochs=1,
         seed=42,
         data_seed=42,
         per_device_train_batch_size=BATCH_SIZE,
