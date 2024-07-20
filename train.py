@@ -96,7 +96,7 @@ def main():
     tokenizer.pad_token = tokenizer.eos_token
     tokenizer.mask_token = tokenizer.eos_token
     encoder = build_hinshi_tokenize(tokenizer, rate=args.mask_rate)
-
+    print('vocab:', tokenizer.vocab_size)
     config = get_config(args.model_name)
     model = get_hf_models(config)
     # model = AutoModelForCausalLM.from_pretrained(
