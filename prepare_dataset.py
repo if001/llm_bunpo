@@ -172,7 +172,9 @@ class ConstantLengthDatasetHinshi(ConstantLengthDataset):
             #tokenized_inputs = self.tokenizer(buffer, add_special_tokens=self.add_special_tokens, truncation=False)[
             #    "input_ids"
             #]
-            print('tokenized_inputs', tokenized_inputs)
+            for t in tokenized_inputs:
+                print('d: ', self.tokenizer.decode(t))
+            
             all_token_ids = []
             for tokenized_input in tokenized_inputs:
                 if self.append_concat_token:
