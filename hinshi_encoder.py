@@ -61,7 +61,6 @@ def build_hinshi_tokenize(tokenizer, rate=0.5):
             node = node.next
     
     def encode(text, add_special_tokens=True):
-        print('text: ', text)
         tokenized = tokenizer.tokenize(text)
         encoded = tokenizer.encode(text)
         ids = []

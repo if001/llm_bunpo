@@ -166,7 +166,9 @@ class ConstantLengthDatasetHinshi(ConstantLengthDataset):
                         more_examples = False
                         break
 
-            tokenized_inputs = self.encoder(buffer, add_special_tokens=self.add_special_tokens)
+            tokenized_inputs = []
+            for b in buffer:
+                tokenized_inputs.append(self.encoder(b, add_special_tokens=self.add_special_tokens))
             #tokenized_inputs = self.tokenizer(buffer, add_special_tokens=self.add_special_tokens, truncation=False)[
             #    "input_ids"
             #]
