@@ -96,7 +96,12 @@ def main():
     tokenizer.pad_token = tokenizer.eos_token
     tokenizer.mask_token = tokenizer.eos_token
     encoder = build_hinshi_tokenize(tokenizer, rate=args.mask_rate)
-
+    t = "朝日新聞によると、日本の菅義偉総務大臣は北朝鮮による日本人拉致問題に関する放送を、"
+    id = encoder(t, add_special_tokens=True)
+    print(id)
+    print(tokenizer.decode(id))
+    print()
+    exit(0)
     config = get_config(args.model_name)
     model = get_hf_models(config)
     # model = AutoModelForCausalLM.from_pretrained(
