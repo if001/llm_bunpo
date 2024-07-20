@@ -63,11 +63,14 @@ def build_hinshi_tokenize(tokenizer, rate=0.5):
     def encode(text, add_special_tokens=True):
         tokenized = tokenizer.tokenize(text)
         encoded = tokenizer.encode(text, add_special_tokens=False)
+        print('tokenized', tokenized)
         ids = []
         for char,id in zip(tokenized, encoded):
             rand = random.randint(0, 100)
             if rate*100 > rand:
+                print(char)
                 h = get_hinshi(char)
+                print('h', h)
                 h_id = tokenizer.encode(f'<{h}>')[0]
                 ids.append(h_id)
             else:
