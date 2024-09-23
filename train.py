@@ -66,7 +66,7 @@ def parse_arguments():
     parser.add_argument('--max_steps', default=-1)
     parser.add_argument('--epochs', default=1, type=int)
     parser.add_argument('--warmup_steps', default=300, type=int)
-    parser.add_argument('--eval_steps ', default=300, type=int)
+    parser.add_argument('--eval_steps', default=300, type=int)
     args = parser.parse_args()
     print("args: ", args)
     return args
