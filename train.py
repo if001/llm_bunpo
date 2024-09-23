@@ -136,7 +136,7 @@ def main():
         gradient_accumulation_steps=GC_STEPS,
         warmup_steps=args.warmup_steps,
         evaluation_strategy="steps",
-        eval_steps=1000,
+        eval_steps=args.eval_steps,
         weight_decay=0.01,
         # optim="adamw_apex_fused",
         # optim="adafactor",
@@ -144,7 +144,6 @@ def main():
         logging_steps=LOGGING_STEPS,
         logging_strategy="steps",
         learning_rate=6.0e-5,
-        eval_steps=args.eval_steps,
         # min_lr
         save_strategy="steps",
         save_total_limit=3,
