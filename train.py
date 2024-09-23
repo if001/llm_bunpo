@@ -31,7 +31,6 @@ from hinshi_encoder import build_hinshi_tokenize
 
 MAX_TOKENS = 8 * 1000 * 1000 * 1000
 
-MAX_LENGTH = 2048
 BATCH_SIZE=1
 GC_STEPS=1
 
@@ -66,6 +65,7 @@ def parse_arguments():
     parser.add_argument('--max_steps', default=-1)
     parser.add_argument('--epochs', default=1, type=int)
     parser.add_argument('--warmup_steps', default=300, type=int)
+    parser.add_argument('--logging_steps', default=300, type=int)
     parser.add_argument('--eval_steps', default=300, type=int)
     args = parser.parse_args()
     print("args: ", args)
@@ -141,7 +141,7 @@ def main():
         # optim="adamw_apex_fused",
         # optim="adafactor",
         logging_dir=args.output_dir,
-        logging_steps=LOGGING_STEPS,
+        logging_steps=args.logging_steps,
         logging_strategy="steps",
         learning_rate=6.0e-5,
         # min_lr

@@ -27,7 +27,7 @@ class ComputeThroughputCallback(TrainerCallback):
     
     def on_step_end(self, args, state, control, **kwargs):
         """イテレーションが終了した後に経過時間を計算し、TFLOPsを計算するために使用します。"""
-        if self.start_time is not None and (state.global_step % args.gradient_accumulation_steps == 0 or state.global_step == state.max_steps):
+        if self.start_time is not None and (state.global_step % (args.gradient_accumulation_steps*args.logging_steps) == 0 or state.global_step == state.max_steps):
             time_per_iter = time.time() - self.start_time
             self.total_time += time_per_iter
             self.iterations += 1
