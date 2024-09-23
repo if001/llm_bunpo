@@ -104,6 +104,11 @@ def main():
     config['pad_token_id'] = tokenizer.pad_token_id
 
     model = get_hf_models(config)
+    total_params = sum(p.numel() for p in model.parameters())
+    total_params_million = total_params / 1e6
+    total_params_billion = total_params / 1e9    
+    print(f"Total parameters: {total_params_million:.2f} million ({total_params_billion:.2f} billion)")
+
     # model = AutoModelForCausalLM.from_pretrained(
     #         args.repo_id,
     #         # torch_dtype=torch.float16
