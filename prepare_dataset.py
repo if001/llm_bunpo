@@ -106,7 +106,7 @@ def _prepare_packed_dataloader(
                 add_special_tokens=add_special_tokens,
                 encoder=encoder
             )
-            print('encoder', encoder)
+            # print('encoder', encoder)
             if isinstance(dataset, datasets.IterableDataset):
                 return constant_length_iterator
 
