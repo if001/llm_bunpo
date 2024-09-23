@@ -69,7 +69,7 @@ def parse_arguments():
     parser.add_argument(
         "--tokenizer", type=str, default="NovelAI/nerdstash-tokenizer-v2"
     )
-    parser.add_argument("--resume", action="store_true")
+    parser.add_argument("--resume_path", type=str)
     parser.add_argument("--mask_rate", type=float, default=0.5)
     parser.add_argument(
         "--dataset_ids",
@@ -219,7 +219,10 @@ def main():
         callbacks=[computeThroughput, tokenCounter],
     )
 
-    trainer.train(resume_from_checkpoint=args.resume)
+    if args.resume_path:
+        trainer.train(resume_from_checkpoint=args.resume_path)
+    else:
+        trainer.train()
     print("train done..")
 
     model.save_pretrained(args.output_dir)
