@@ -66,6 +66,7 @@ def parse_arguments():
     parser.add_argument('--max_steps', default=-1)
     parser.add_argument('--epochs', default=1, type=int)
     parser.add_argument('--warmup_steps', default=300)
+    parser.add_argument('--eval_steps ', default=300)
     args = parser.parse_args()
     print("args: ", args)
     return args
@@ -143,6 +144,7 @@ def main():
         logging_steps=LOGGING_STEPS,
         logging_strategy="steps",
         learning_rate=6.0e-5,
+        eval_steps=args.eval_steps,
         # min_lr
         save_strategy="steps",
         save_total_limit=3,
