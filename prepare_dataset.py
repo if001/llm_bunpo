@@ -170,11 +170,11 @@ class ConstantLengthDatasetHinshi(ConstantLengthDataset):
             for i, b in enumerate(buffer):
                 id = self.encoder(b, add_special_tokens=self.add_special_tokens)
                 tokenized_inputs.append(id)
-                if i < 5:
-                    print('b:', b)
-                    print('id:', id)
-                    print('d:', self.tokenizer.decode(id))
-                    print('-'*100)
+                # if i < 5:
+                #     print('b:', b)
+                #     print('id:', id)
+                #     print('d:', self.tokenizer.decode(id))
+                #     print('-'*100)
 
             #tokenized_inputs = self.tokenizer(buffer, add_special_tokens=self.add_special_tokens, truncation=False)[
             #    "input_ids"
