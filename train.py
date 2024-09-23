@@ -3,10 +3,13 @@ import torch
 import numpy as np
 import argparse
 import os
-from typing import Optional
-os.environ["TOKENIZERS_PARALLELISM"]="false"
+
+# from typing import Optional
+
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 from datasets import load_dataset, concatenate_datasets, DatasetDict
+
 # from peft import LoraConfig, get_peft_model, TaskType
 # from peft import prepare_model_for_kbit_training
 from transformers import (
@@ -16,9 +19,10 @@ from transformers import (
     TrainingArguments,
     DataCollatorForLanguageModeling,
 )
-from torch.utils.data.distributed import DistributedSampler
-from torch.utils.data import DataLoader
-import torch.distributed as dist
+
+# from torch.utils.data.distributed import DistributedSampler
+# from torch.utils.data import DataLoader
+# import torch.distributed as dist
 
 print("torch version: ", torch.version.cuda)
 
@@ -31,16 +35,18 @@ from hinshi_encoder import build_hinshi_tokenize
 
 MAX_TOKENS = 8 * 1000 * 1000 * 1000
 
-BATCH_SIZE=1
-GC_STEPS=1
+BATCH_SIZE = 1
+GC_STEPS = 1
 
-LOGGING_STEPS=100
-SAVE_STEPS=100
+LOGGING_STEPS = 100
+SAVE_STEPS = 100
 # NUM_GPUS=int(os.environ['WORLD_SIZE'])
 # LOCAL_RANK = int(os.environ['LOCAL_RANK'])
 
 import transformers
+
 transformers.logging.set_verbosity_info()
+
 
 def set_seed(seed=42):
     torch.manual_seed(seed)
@@ -49,7 +55,9 @@ def set_seed(seed=42):
     torch.backends.cudnn.benchmark = False
     np.random.seed(seed)
 
+
 set_seed(42)
+
 
 def parse_arguments():
     parser = argparse.ArgumentParser()
@@ -58,18 +66,27 @@ def parse_arguments():
     parser.add_argument("--wandb_project", type=str, required=True)
     # parser.add_argument("--wandb_entity", type=str, required=True)
     parser.add_argument("--upload_repo_id", type=str)
-    parser.add_argument("--tokenizer", type=str, default="NovelAI/nerdstash-tokenizer-v2")
-    parser.add_argument("--resume", action='store_true')
+    parser.add_argument(
+        "--tokenizer", type=str, default="NovelAI/nerdstash-tokenizer-v2"
+    )
+    parser.add_argument("--resume", action="store_true")
     parser.add_argument("--mask_rate", type=float, default=0.5)
-    parser.add_argument('--dataset_ids', required=True, nargs="*", type=str, help='--dataset_ids izumi-lab/wikipedia-ja-20230720') 
-    parser.add_argument('--max_steps', default=-1)
-    parser.add_argument('--epochs', default=1, type=int)
-    parser.add_argument('--warmup_steps', default=300, type=int)
-    parser.add_argument('--logging_steps', default=300, type=int)
-    parser.add_argument('--eval_steps', default=300, type=int)
+    parser.add_argument(
+        "--dataset_ids",
+        required=True,
+        nargs="*",
+        type=str,
+        help="--dataset_ids izumi-lab/wikipedia-ja-20230720",
+    )
+    parser.add_argument("--max_steps", default=-1)
+    parser.add_argument("--epochs", default=1, type=int)
+    parser.add_argument("--warmup_steps", default=300, type=int)
+    parser.add_argument("--logging_steps", default=300, type=int)
+    parser.add_argument("--eval_steps", default=300, type=int)
     args = parser.parse_args()
     print("args: ", args)
     return args
+
 
 def make_dataset(dataset_ids):
     ds = []
@@ -89,6 +106,7 @@ def make_dataset(dataset_ids):
     print("dataset", combined_dataset)
     return combined_dataset.shuffle(seed=42).train_test_split(test_size=0.1)
 
+
 def main():
     args = parse_arguments()
     # wandb.init(project=args.wandb_project, entity=args.wandb_entity)
@@ -98,18 +116,20 @@ def main():
     tokenizer.pad_token = tokenizer.eos_token
     tokenizer.mask_token = tokenizer.eos_token
     encoder = build_hinshi_tokenize(tokenizer, rate=args.mask_rate)
-    print('vocab:', tokenizer.vocab_size)
+    print("vocab:", tokenizer.vocab_size)
     config = get_config(args.model_name)
-    config['vocab_size'] = tokenizer.vocab_size
-    config['bos_token_id'] = tokenizer.bos_token_id
-    config['eos_token_id'] = tokenizer.bos_token_id
-    config['pad_token_id'] = tokenizer.pad_token_id
+    config["vocab_size"] = tokenizer.vocab_size
+    config["bos_token_id"] = tokenizer.bos_token_id
+    config["eos_token_id"] = tokenizer.bos_token_id
+    config["pad_token_id"] = tokenizer.pad_token_id
 
     model = get_hf_models(config)
     total_params = sum(p.numel() for p in model.parameters())
     total_params_million = total_params / 1e6
-    total_params_billion = total_params / 1e9    
-    print(f"Total parameters: {total_params_million:.2f} million ({total_params_billion:.2f} billion)")
+    total_params_billion = total_params / 1e9
+    print(
+        f"Total parameters: {total_params_million:.2f} million ({total_params_billion:.2f} billion)"
+    )
 
     # model = AutoModelForCausalLM.from_pretrained(
     #         args.repo_id,
@@ -117,13 +137,27 @@ def main():
     #         )
     print("--- model config ... ---")
     print(model.config)
-    
+
     data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
 
     print("--- making dataset ... ---")
     dataset = make_dataset(args.dataset_ids)
-    train_dataset = prepare_dataset(dataset["train"], tokenizer, encoder=encoder, add_special_tokens=False, append_concat_token=True)
-    test_dataset = prepare_dataset(dataset["test"], tokenizer, encoder=encoder, add_special_tokens=False, append_concat_token=True)
+    train_dataset = prepare_dataset(
+        dataset["train"],
+        tokenizer,
+        encoder=encoder,
+        add_special_tokens=False,
+        append_concat_token=True,
+        max_seq_length=model.config.max_position_embeddings,
+    )
+    test_dataset = prepare_dataset(
+        dataset["test"],
+        tokenizer,
+        encoder=encoder,
+        add_special_tokens=False,
+        append_concat_token=True,
+        max_seq_length=model.config.max_position_embeddings,
+    )
 
     print("--- training start ... ---")
     training_args = TrainingArguments(
@@ -168,7 +202,7 @@ def main():
 
     computeThroughput = ComputeThroughputCallback(
         vocab_size=model.config.vocab_size,
-        #seq_length=model.config.max_sequence_length,
+        # seq_length=model.config.max_sequence_length,
         seq_length=model.config.max_position_embeddings,
         num_layers=model.config.num_hidden_layers,
         hidden_size=model.config.hidden_size,
@@ -182,24 +216,25 @@ def main():
         train_dataset=train_dataset,
         eval_dataset=test_dataset,
         data_collator=data_collator,
-        callbacks=[computeThroughput, tokenCounter]
+        callbacks=[computeThroughput, tokenCounter],
     )
 
     trainer.train(resume_from_checkpoint=args.resume)
     print("train done..")
 
     model.save_pretrained(args.output_dir)
-    print("save...") 
-    
+    print("save...")
+
     for v in model.state_dict():
         print(v, model.state_dict()[v].shape)
-    print("="*100)
+    print("=" * 100)
 
     if args.upload_repo_id:
         print("--- push to hf ---")
         model.push_to_hub(args.upload_repo_id)
-        print("upload done...") 
+        print("upload done...")
     wandb.finish()
+
 
 if __name__ == "__main__":
     main()
