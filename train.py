@@ -160,7 +160,7 @@ def main():
         # fsdp="full_shard",
         lr_scheduler_type="cosine",
         remove_unused_columns=False,
-        max_steps=args.max_steps
+        max_steps=args.max_steps,
         num_train_epochs=args.epochs
     )
     print("parallel_mode: ", training_args.parallel_mode)
