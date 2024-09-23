@@ -142,6 +142,32 @@ phi3 = [
         eos_token_id=7,
         pad_token_id=7,
         sliding_window=None,
+    ),
+    dict(
+        name='phi3-tiny-half',
+        # vocab_size=65535, ## NovelAI/nerdstash-tokenizer-v2
+        vocab_size=96867, ## llm-jp-13b-v2
+        hidden_size=512,
+        intermediate_size=512,
+        num_hidden_layers=2,
+        num_attention_heads=4,
+        num_key_value_heads=None,
+        resid_pdrop=0.0,
+        embd_pdrop=0.0,
+        attention_dropout=0.0,
+        hidden_act="silu",
+        max_position_embeddings=1024,
+        original_max_position_embeddings=1024,
+        initializer_range=0.02,
+        rms_norm_eps=1e-5,
+        use_cache=True,
+        tie_word_embeddings=False,
+        rope_theta=10000.0,
+        rope_scaling=None,
+        bos_token_id=1,
+        eos_token_id=7,
+        pad_token_id=7,
+        sliding_window=None,
     )
 ]
 configs.extend(phi3)
