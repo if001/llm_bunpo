@@ -83,16 +83,19 @@ def parse_arguments():
     parser.add_argument("--warmup_steps", default=300, type=int)
     parser.add_argument("--logging_steps", default=300, type=int)
     parser.add_argument("--eval_steps", default=300, type=int)
+    parser.add_argument("--ds_select_len", default=None, type=int)
     args = parser.parse_args()
     print("args: ", args)
     return args
 
 
-def make_dataset(dataset_ids):
+def make_dataset(dataset_ids, select_len=None):
     ds = []
     # print(datasets)
     for dataset_id in dataset_ids:
         dataset = load_dataset(dataset_id, split="train", num_proc=8)
+        if select_len:
+            dataset = dataset.shuffle(seed=42).select(range(select_len))
         # ds_part = dataset.shuffle(seed=42).select(range(100))
         # ds_part = dataset.shuffle(seed=42)
         ds_part = dataset
@@ -141,7 +144,7 @@ def main():
     data_collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
 
     print("--- making dataset ... ---")
-    dataset = make_dataset(args.dataset_ids)
+    dataset = make_dataset(args.dataset_ids, select_len=args.ds_select_len)
     train_dataset = prepare_dataset(
         dataset["train"],
         tokenizer,
