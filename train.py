@@ -37,8 +37,6 @@ MAX_TOKENS = 8 * 1000 * 1000 * 1000
 
 GC_STEPS = 1
 
-LOGGING_STEPS = 100
-
 # NUM_GPUS=int(os.environ['WORLD_SIZE'])
 # LOCAL_RANK = int(os.environ['LOCAL_RANK'])
 
@@ -85,6 +83,9 @@ def parse_arguments():
     parser.add_argument("--ds_select_len", default=None, type=int)
     parser.add_argument("--batch_size", default=1, type=int)
     parser.add_argument("--save_steps", default=100, type=int)
+    parser.add_argument("--lr_scheduler_type", default="linear", type=str)
+    parser.add_argument("--learning_rate", default=5e-5, type=float)
+
     args = parser.parse_args()
     print("args: ", args)
     return args
@@ -212,7 +213,7 @@ def main():
         num_layers=model.config.num_hidden_layers,
         hidden_size=model.config.hidden_size,
         world_size=1,
-        log_steps=LOGGING_STEPS,
+        log_steps=args.logging_steps,
     )
     tokenCounter = TokenCountCallback(max_token_count=MAX_TOKENS)
     trainer = Trainer(
