@@ -200,6 +200,7 @@ def main():
         lr_scheduler_type="cosine",
         remove_unused_columns=False,
         max_steps=args.max_steps,
+        resume_from_checkpoint=args.resume_path,
     )
     print("parallel_mode: ", training_args.parallel_mode)
     print("world_size", training_args.world_size)
