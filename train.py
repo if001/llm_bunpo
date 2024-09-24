@@ -35,11 +35,10 @@ from hinshi_encoder import build_hinshi_tokenize
 
 MAX_TOKENS = 8 * 1000 * 1000 * 1000
 
-BATCH_SIZE = 4
 GC_STEPS = 1
 
 LOGGING_STEPS = 100
-SAVE_STEPS = 100
+
 # NUM_GPUS=int(os.environ['WORLD_SIZE'])
 # LOCAL_RANK = int(os.environ['LOCAL_RANK'])
 
@@ -84,6 +83,8 @@ def parse_arguments():
     parser.add_argument("--logging_steps", default=300, type=int)
     parser.add_argument("--eval_steps", default=300, type=int)
     parser.add_argument("--ds_select_len", default=None, type=int)
+    parser.add_argument("--batch_size", default=1, type=int)
+    parser.add_argument("--save_steps", default=100, type=int)
     args = parser.parse_args()
     print("args: ", args)
     return args
@@ -168,8 +169,8 @@ def main():
         num_train_epochs=args.epochs,
         seed=42,
         data_seed=42,
-        per_device_train_batch_size=BATCH_SIZE,
-        per_device_eval_batch_size=BATCH_SIZE,
+        per_device_train_batch_size=args.batch_size,
+        per_device_eval_batch_size=args.batch_size,
         gradient_accumulation_steps=GC_STEPS,
         warmup_steps=args.warmup_steps,
         evaluation_strategy="steps",
@@ -184,7 +185,7 @@ def main():
         # min_lr
         save_strategy="steps",
         save_total_limit=3,
-        save_steps=SAVE_STEPS,
+        save_steps=args.save_steps,
         report_to="wandb",
         # bf16=True,
         fp16=True,
