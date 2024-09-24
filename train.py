@@ -85,6 +85,7 @@ def parse_arguments():
     parser.add_argument("--save_steps", default=100, type=int)
     parser.add_argument("--lr_scheduler_type", default="linear", type=str)
     parser.add_argument("--learning_rate", default=5e-5, type=float)
+    parser.add_argument("--ignore_data_skip ", action="store_true")
 
     args = parser.parse_args()
     print("args: ", args)
@@ -182,7 +183,7 @@ def main():
         logging_dir=args.output_dir,
         logging_steps=args.logging_steps,
         logging_strategy="steps",
-        learning_rate=6.0e-5,
+        learning_rate=args.learning_rate,
         # min_lr
         save_strategy="steps",
         save_total_limit=3,
@@ -198,10 +199,11 @@ def main():
         # torch_compile=True,
         # num_workers=16,
         # fsdp="full_shard",
-        lr_scheduler_type="cosine",
+        lr_scheduler_type=args.lr_scheduler_type,
         remove_unused_columns=False,
         max_steps=args.max_steps,
         resume_from_checkpoint=args.resume_path,
+        ignore_data_skip=args.ignore_data_skip,
     )
     print("parallel_mode: ", training_args.parallel_mode)
     print("world_size", training_args.world_size)
