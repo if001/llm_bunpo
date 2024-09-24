@@ -35,7 +35,7 @@ from hinshi_encoder import build_hinshi_tokenize
 
 MAX_TOKENS = 8 * 1000 * 1000 * 1000
 
-BATCH_SIZE = 1
+BATCH_SIZE = 4
 GC_STEPS = 1
 
 LOGGING_STEPS = 100
