@@ -85,7 +85,7 @@ def parse_arguments():
     parser.add_argument("--save_steps", default=100, type=int)
     parser.add_argument("--lr_scheduler_type", default="linear", type=str)
     parser.add_argument("--learning_rate", default=5e-5, type=float)
-    parser.add_argument("--ignore_data_skip ", action="store_true")
+    parser.add_argument("--ignore_data_skip", action="store_true")
 
     args = parser.parse_args()
     print("args: ", args)
