@@ -110,7 +110,7 @@ def make_dataset(dataset_ids, select_len=None):
         ds.append(ds_part)
     combined_dataset = concatenate_datasets(ds)
     print("dataset", combined_dataset)
-    return combined_dataset.shuffle(seed=42).train_test_split(test_size=0.1)
+    return combined_dataset.shuffle(seed=42).train_test_split(test_size=0.05)
 
 
 def main():
