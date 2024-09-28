@@ -204,7 +204,6 @@ def main():
         max_steps=args.max_steps,
         resume_from_checkpoint=args.resume_path,
         ignore_data_skip=args.ignore_data_skip,
-        weight_decay=0.01,
     )
     print("parallel_mode: ", training_args.parallel_mode)
     print("world_size", training_args.world_size)
