@@ -130,8 +130,8 @@ def main():
     config["pad_token_id"] = tokenizer.pad_token_id
 
     model = get_hf_models(config)
-    model.vocab_size = len(tokenizer.get_vocab())
-    print("model.vocab_size", model.vocab_size)
+    # model.vocab_size = len(tokenizer.get_vocab())
+    # print("model.vocab_size", model.vocab_size)
     total_params = sum(p.numel() for p in model.parameters())
     total_params_million = total_params / 1e6
     total_params_billion = total_params / 1e9

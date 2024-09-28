@@ -1,8 +1,9 @@
 def get_config(model_name):
     if model_name not in name_to_config:
-        raise ValueError('model not impl')
+        raise ValueError("model not impl")
     conf_dict = name_to_config[model_name]
     return conf_dict
+
 
 configs = []
 
@@ -16,8 +17,8 @@ qwen2 = [
         hf_config=dict(org="qwen", name="qwen2-0.5B"),
         vocab_size=50257,
         attention_dropout=0.0,
-        bos_token_id=1, ## llm-jp
-        eos_token_id=7, ## llm-jp
+        bos_token_id=1,  ## llm-jp
+        eos_token_id=7,  ## llm-jp
         hidden_act="silu",
         hidden_size=896,
         initializer_range=0.02,
@@ -42,8 +43,8 @@ qwen2 = [
         hf_config=dict(org="qwen", name="qwen2-0.1B"),
         vocab_size=50257,
         attention_dropout=0.0,
-        bos_token_id=1, ## llm-jp
-        eos_token_id=7, ## llm-jp
+        bos_token_id=1,  ## llm-jp
+        eos_token_id=7,  ## llm-jp
         hidden_act="silu",
         hidden_size=512,
         initializer_range=0.02,
@@ -68,7 +69,7 @@ configs.extend(qwen2)
 
 phi3 = [
     dict(
-        name='phi3',
+        name="phi3",
         vocab_size=50257,
         hidden_size=3072,
         intermediate_size=8192,
@@ -93,8 +94,8 @@ phi3 = [
         sliding_window=None,
     ),
     dict(
-        name='phi3-small',
-        vocab_size=50257, ## llm-jp
+        name="phi3-small",
+        vocab_size=50257,  ## llm-jp
         hidden_size=896,
         intermediate_size=2048,
         num_hidden_layers=12,
@@ -118,9 +119,10 @@ phi3 = [
         sliding_window=None,
     ),
     dict(
-        name='phi3-tiny',
+        name="phi3-tiny",
         # vocab_size=65535, ## NovelAI/nerdstash-tokenizer-v2
-        vocab_size=96867, ## llm-jp-13b-v2
+        # vocab_size=96867, ## llm-jp-13b-v2
+        vocab_size=96877,  ## llm-jp-13b-v2 + 品詞トークン
         hidden_size=512,
         intermediate_size=512,
         num_hidden_layers=4,
@@ -144,9 +146,9 @@ phi3 = [
         sliding_window=None,
     ),
     dict(
-        name='phi3-tiny-half',
+        name="phi3-tiny-half",
         # vocab_size=65535, ## NovelAI/nerdstash-tokenizer-v2
-        vocab_size=96867, ## llm-jp-13b-v2
+        vocab_size=96867,  ## llm-jp-13b-v2
         hidden_size=512,
         intermediate_size=512,
         num_hidden_layers=2,
@@ -168,7 +170,7 @@ phi3 = [
         eos_token_id=7,
         pad_token_id=7,
         sliding_window=None,
-    )
+    ),
 ]
 configs.extend(phi3)
 name_to_config = {config["name"]: config for config in configs}
