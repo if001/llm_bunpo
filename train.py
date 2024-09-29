@@ -124,7 +124,8 @@ def main():
     encoder = build_hinshi_tokenize(tokenizer, rate=args.mask_rate)
     print("vocab:", tokenizer.vocab_size)
     config = get_config(args.model_name)
-    config["vocab_size"] = tokenizer.vocab_size
+    config["vocab_size"] = len(tokenizer.get_vocab())
+    # config["vocab_size"] = tokenizer.vocab_size
     config["bos_token_id"] = tokenizer.bos_token_id
     config["eos_token_id"] = tokenizer.bos_token_id
     config["pad_token_id"] = tokenizer.pad_token_id
@@ -226,7 +227,7 @@ def main():
         train_dataset=train_dataset,
         eval_dataset=test_dataset,
         data_collator=data_collator,
-        callbacks=[computeThroughput, tokenCounter],
+        # callbacks=[computeThroughput, tokenCounter],
     )
 
     if args.resume_path:
