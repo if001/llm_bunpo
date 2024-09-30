@@ -87,6 +87,8 @@ def parse_arguments():
     parser.add_argument("--learning_rate", default=5e-5, type=float)
     parser.add_argument("--ignore_data_skip", action="store_true")
 
+    parser.add_argument("--to_model_name", default=None, type=str)
+
     args = parser.parse_args()
     print("args: ", args)
     return args
@@ -113,6 +115,26 @@ def make_dataset(dataset_ids, select_len=None):
     return combined_dataset.shuffle(seed=42).train_test_split(test_size=0.01)
 
 
+def load_model_with_sub_layer(base_model, to_model_name):
+    print("load sub layer weight...", to_model_name)
+
+    def _load_layer(_base_model, _to_model, idx):
+        base_model_w = _base_model.encoder.layer[idx].state_dict()
+        to_model_w = _to_model.encoder.layer[idx]
+        to_model_w.load_state_dict(base_model_w)
+        for key in base_model_w.keys():
+            assert torch.equal(
+                base_model_w[key], to_model_w.encoder.layer[0].state_dict()[key]
+            ), f"Weights do not match for {key} in layer."
+        return to_model_w
+
+    to_model = get_hf_models(to_model_name)
+    _load_layer(base_model, to_model, 0)
+    _load_layer(base_model, to_model, 1)
+
+    return to_model
+
+
 def main():
     args = parse_arguments()
     # wandb.init(project=args.wandb_project, entity=args.wandb_entity)
@@ -131,6 +153,8 @@ def main():
     config["pad_token_id"] = tokenizer.pad_token_id
 
     model = get_hf_models(config)
+    if args.to_model_name:
+        model = load_model_with_sub_layer(model, args.to_model_name)
     # model.vocab_size = len(tokenizer.get_vocab())
     # print("model.vocab_size", model.vocab_size)
     total_params = sum(p.numel() for p in model.parameters())
