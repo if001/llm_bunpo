@@ -115,9 +115,7 @@ def make_dataset(dataset_ids, select_len=None):
     return combined_dataset.shuffle(seed=42).train_test_split(test_size=0.01)
 
 
-def load_model_with_sub_layer(base_model, to_model_name):
-    print("load sub layer weight...", to_model_name)
-
+def load_model_with_sub_layer(base_model, to_model):
     def _load_layer(_base_model, _to_model, idx):
         base_model_w = _base_model.encoder.layer[idx].state_dict()
         to_model_w = _to_model.encoder.layer[idx]
@@ -128,7 +126,6 @@ def load_model_with_sub_layer(base_model, to_model_name):
             ), f"Weights do not match for {key} in layer."
         return to_model_w
 
-    to_model = get_hf_models(to_model_name)
     _load_layer(base_model, to_model, 0)
     _load_layer(base_model, to_model, 1)
 
@@ -154,7 +151,15 @@ def main():
 
     model = get_hf_models(config)
     if args.to_model_name:
-        model = load_model_with_sub_layer(model, args.to_model_name)
+        print("load sub layer weight...", args.to_model_name)
+        _to_model_config = get_config(args.to_model_name)
+        _to_model_config["vocab_size"] = len(tokenizer.get_vocab())
+        # config["vocab_size"] = tokenizer.vocab_size
+        _to_model_config["bos_token_id"] = tokenizer.bos_token_id
+        _to_model_config["eos_token_id"] = tokenizer.bos_token_id
+        _to_model_config["pad_token_id"] = tokenizer.pad_token_id
+        to_model = get_hf_models(_to_model_config)
+        model = load_model_with_sub_layer(model, to_model)
     # model.vocab_size = len(tokenizer.get_vocab())
     # print("model.vocab_size", model.vocab_size)
     total_params = sum(p.numel() for p in model.parameters())
