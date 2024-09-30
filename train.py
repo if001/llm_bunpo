@@ -267,6 +267,15 @@ def main():
         # callbacks=[computeThroughput, tokenCounter],
     )
 
+    if args.to_model_name and args.from_model_path:
+        import json
+
+        trainer_state_path = f"{args.from_model_path}/trainer_state.json"
+        with open(trainer_state_path, "r") as f:
+            trainer_state = json.load(f)
+        global_step = trainer_state.get("global_step", 0)
+        trainer_state.global_step = global_step
+
     if args.resume_path:
         trainer.train(resume_from_checkpoint=args.resume_path)
     else:
