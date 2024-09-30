@@ -87,6 +87,7 @@ def parse_arguments():
     parser.add_argument("--learning_rate", default=5e-5, type=float)
     parser.add_argument("--ignore_data_skip", action="store_true")
 
+    parser.add_argument("--from_model_path", default=None, type=str)
     parser.add_argument("--to_model_name", default=None, type=str)
 
     args = parser.parse_args()
@@ -117,14 +118,15 @@ def make_dataset(dataset_ids, select_len=None):
 
 def load_model_with_sub_layer(base_model, to_model):
     def _load_layer(_base_model, _to_model, idx):
-        base_model_w = _base_model.encoder.layer[idx].state_dict()
-        to_model_w = _to_model.encoder.layer[idx]
+        base_model_w = _base_model.model.layers[idx].state_dict()
+
+        to_model_w = _to_model.model.layers[idx]
         to_model_w.load_state_dict(base_model_w)
-        for key in base_model_w.keys():
+
+        for key, v in to_model_w.state_dict().items():
             assert torch.equal(
-                base_model_w[key], to_model_w.encoder.layer[0].state_dict()[key]
+                base_model_w[key], v
             ), f"Weights do not match for {key} in layer."
-        return to_model_w
 
     _load_layer(base_model, to_model, 0)
     _load_layer(base_model, to_model, 1)
@@ -150,7 +152,9 @@ def main():
     config["pad_token_id"] = tokenizer.pad_token_id
 
     model = get_hf_models(config)
-    if args.to_model_name:
+    if args.to_model_name and args.from_model_path:
+        from safetensors.torch import load_file
+
         print("load sub layer weight...", args.to_model_name)
         _to_model_config = get_config(args.to_model_name)
         _to_model_config["vocab_size"] = len(tokenizer.get_vocab())
@@ -159,6 +163,10 @@ def main():
         _to_model_config["eos_token_id"] = tokenizer.bos_token_id
         _to_model_config["pad_token_id"] = tokenizer.pad_token_id
         to_model = get_hf_models(_to_model_config)
+        safetensors_path = f"{args.from_model_path}/model.safetensors"
+        checkpoint = load_file(safetensors_path)
+        model.load_state_dict(checkpoint)
+
         model = load_model_with_sub_layer(model, to_model)
     # model.vocab_size = len(tokenizer.get_vocab())
     # print("model.vocab_size", model.vocab_size)
