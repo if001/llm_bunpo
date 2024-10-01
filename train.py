@@ -29,7 +29,11 @@ print("torch version: ", torch.version.cuda)
 from hf_config import get_config
 from hf_model import get_hf_models
 
-from callbacks import ComputeThroughputCallback, TokenCountCallback
+from callbacks import (
+    ComputeThroughputCallback,
+    TokenCountCallback,
+    OverrideGlobalStepCallback,
+)
 from prepare_dataset import prepare_dataset
 from hinshi_encoder import build_hinshi_tokenize
 
@@ -119,6 +123,7 @@ def make_dataset(dataset_ids, select_len=None):
 def load_model_with_sub_layer(base_model, to_model):
     def _load_layer(_base_model, _to_model, idx):
         base_model_w = _base_model.model.layers[idx].state_dict()
+        print(base_model_w[idx][:3])
 
         to_model_w = _to_model.model.layers[idx]
         to_model_w.load_state_dict(base_model_w)
@@ -165,9 +170,19 @@ def main():
         to_model = get_hf_models(_to_model_config)
         safetensors_path = f"{args.from_model_path}/model.safetensors"
         checkpoint = load_file(safetensors_path)
+        ## debug before load
+        # base_model_w = model.model.layers[0].state_dict()
+        # for k, v in base_model_w.items():
+        #   print(k, v[:3])
+        # print(':'*100)
         model.load_state_dict(checkpoint)
-
         model = load_model_with_sub_layer(model, to_model)
+        ## debug after load
+        # base_model_w = model.model.layers[0].state_dict()
+        # for k, v in base_model_w.items():
+        #   print(k, v[:3])
+        # print(':'*100)
+
     # model.vocab_size = len(tokenizer.get_vocab())
     # print("model.vocab_size", model.vocab_size)
     total_params = sum(p.numel() for p in model.parameters())
@@ -258,14 +273,8 @@ def main():
         log_steps=args.logging_steps,
     )
     tokenCounter = TokenCountCallback(max_token_count=MAX_TOKENS)
-    trainer = Trainer(
-        model=model,
-        args=training_args,
-        train_dataset=train_dataset,
-        eval_dataset=test_dataset,
-        data_collator=data_collator,
-        # callbacks=[computeThroughput, tokenCounter],
-    )
+    callbacks = []
+    # callbacks=[computeThroughput, tokenCounter]
 
     if args.to_model_name and args.from_model_path:
         import json
@@ -274,8 +283,17 @@ def main():
         with open(trainer_state_path, "r") as f:
             trainer_state = json.load(f)
         global_step = trainer_state.get("global_step", 0)
-        trainer.state.global_step = global_step
-        print("set trainer_state.global_step: ", global_step)
+        callbacks.append(OverrideGlobalStepCallback(global_step))
+
+    trainer = Trainer(
+        model=model,
+        args=training_args,
+        train_dataset=train_dataset,
+        eval_dataset=test_dataset,
+        data_collator=data_collator,
+        # callbacks=[computeThroughput, tokenCounter],
+        callbacks=[OverrideGlobalStepCallback()],
+    )
 
     if args.resume_path:
         trainer.train(resume_from_checkpoint=args.resume_path)
