@@ -291,7 +291,7 @@ def main():
         eval_dataset=test_dataset,
         data_collator=data_collator,
         # callbacks=[computeThroughput, tokenCounter],
-        callbacks=[OverrideGlobalStepCallback()],
+        callbacks=callbacks,
     )
 
     if args.resume_path:
