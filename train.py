@@ -274,7 +274,7 @@ def main():
         with open(trainer_state_path, "r") as f:
             trainer_state = json.load(f)
         global_step = trainer_state.get("global_step", 0)
-        trainer_state.global_step = global_step
+        trainer.state.global_step = global_step
         print("set trainer_state.global_step: ", global_step)
 
     if args.resume_path:
