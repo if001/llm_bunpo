@@ -275,6 +275,7 @@ def main():
             trainer_state = json.load(f)
         global_step = trainer_state.get("global_step", 0)
         trainer_state.global_step = global_step
+        print("set trainer_state.global_step: ", global_step)
 
     if args.resume_path:
         trainer.train(resume_from_checkpoint=args.resume_path)
