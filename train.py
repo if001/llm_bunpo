@@ -123,7 +123,6 @@ def make_dataset(dataset_ids, select_len=None):
 def load_model_with_sub_layer(base_model, to_model):
     def _load_layer(_base_model, _to_model, idx):
         base_model_w = _base_model.model.layers[idx].state_dict()
-        print(base_model_w[idx][:3])
 
         to_model_w = _to_model.model.layers[idx]
         to_model_w.load_state_dict(base_model_w)

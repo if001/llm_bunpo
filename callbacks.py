@@ -143,5 +143,5 @@ class OverrideGlobalStepCallback(TrainerCallback):
 
     def on_step_begin(self, args, state, control, **kwargs):
         if state.global_step == 0:
-            print("set trainer_state.global_step: ", global_step)
+            print("set trainer_state.global_step: ", self.start_step)
             state.global_step = self.start_step
